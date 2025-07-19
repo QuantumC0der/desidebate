@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desi Debate - Intelligent Debate System</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modern-style.css') }}">
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="animated-bg">
+        <div class="gradient-bg"></div>
+        <div class="particle-bg"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Top Navigation -->
+        <nav class="top-nav">
+            <div class="nav-container">
+                <div class="brand">
+                    <i class="fas fa-brain brand-icon"></i>
+                    <span class="brand-text">Desi Debate</span>
+                </div>
+                <div class="nav-actions">
+                    <button class="nav-btn" onclick="showAbout()">
+                        <i class="fas fa-info-circle"></i>
+                        <span>About</span>
+                    </button>
+                    <button class="nav-btn" onclick="toggleTheme()">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <div class="content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- Left Panel -->
+                    <div class="col-lg-4 col-xl-3">
+                        <!-- Control Panel -->
+                        <div class="control-panel" data-aos="fade-right">
+                            <h3 class="panel-title">
+                                <i class="fas fa-cog"></i> Debate Control Panel
+                            </h3>
+                            
+                            <!-- Topic Setting -->
+                            <div class="control-section">
+                                <label class="control-label">Debate Topic</label>
+                                <div class="input-group modern-input">
+                                    <input type="text" 
+                                           id="topicInput" 
+                                           class="form-control" 
+                                           placeholder="Enter the topic you want to discuss..."
+                                           value="Should artificial intelligence be regulated by the government?">
+                                    <button class="btn btn-primary" onclick="setTopic()">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Control Buttons -->
+                            <div class="control-actions">
+                                <button class="action-btn primary" onclick="startDebate()" id="startBtn">
+                                    <i class="fas fa-play"></i>
+                                    <span>Start Debate</span>
+                                </button>
+                                <button class="action-btn secondary" onclick="nextRound()" id="nextBtn" disabled>
+                                    <i class="fas fa-forward"></i>
+                                    <span>Next Round</span>
+                                </button>
+                                <button class="action-btn danger" onclick="resetDebate()">
+                                    <i class="fas fa-redo"></i>
+                                    <span>Reset</span>
+                                </button>
+                            </div>
+                            
+                            <!-- Status Display -->
+                            <div class="status-display">
+                                <div class="status-item">
+                                    <span class="status-label">Current Round</span>
+                                    <span class="status-value" id="currentRound">0</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-label">Debate Status</span>
+                                    <span class="status-value" id="debateStatus">Preparing</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Agent Status -->
+                        <div class="agents-panel" data-aos="fade-right" data-aos-delay="100">
+                            <h3 class="panel-title">
+                                <i class="fas fa-users"></i> AI Agent Status
+                            </h3>
+                            
+                            <!-- Agent A -->
+                            <div class="agent-card" id="agentA">
+                                <div class="agent-header">
+                                    <div class="agent-avatar support">
+                                        <i class="fas fa-user-tie"></i>
+                                    </div>
+                                    <div class="agent-info">
+                                        <h5>Supporter A</h5>
+                                        <p>Actively supports position</p>
+                                    </div>
+                                </div>
+                                <div class="agent-stats">
+                                    <div class="stat-bar">
+                                        <label>Stance Strength</label>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success" id="stanceA" style="width: 80%">
+                                                <span>+0.8</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-bar">
+                                        <label>Conviction</label>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-info" id="convictionA" style="width: 70%">
+                                                <span>0.7</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Agent B -->
+                            <div class="agent-card" id="agentB">
+                                <div class="agent-header">
+                                    <div class="agent-avatar oppose">
+                                        <i class="fas fa-user-shield"></i>
+                                    </div>
+                                    <div class="agent-info">
+                                        <h5>Opponent B</h5>
+                                        <p>Firmly opposes position</p>
+                                    </div>
+                                </div>
+                                <div class="agent-stats">
+                                    <div class="stat-bar">
+                                        <label>Stance Strength</label>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-danger" id="stanceB" style="width: 30%">
+                                                <span>-0.6</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-bar">
+                                        <label>Conviction</label>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-info" id="convictionB" style="width: 60%">
+                                                <span>0.6</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Agent C -->
+                            <div class="agent-card" id="agentC">
+                                <div class="agent-header">
+                                    <div class="agent-avatar neutral">
+                                        <i class="fas fa-user-graduate"></i>
+                                    </div>
+                                    <div class="agent-info">
+                                        <h5>Neutral C</h5>
+                                        <p>Rational analysis position</p>
+                                    </div>
+                                </div>
+                                <div class="agent-stats">
+                                    <div class="stat-bar">
+                                        <label>Stance Strength</label>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-warning" id="stanceC" style="width: 50%">
+                                                <span>0.0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-bar">
+                                        <label>Conviction</label>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-info" id="convictionC" style="width: 50%">
+                                                <span>0.5</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Debate Area -->
+                    <div class="col-lg-8 col-xl-9">
+                        <div class="debate-area" data-aos="fade-left">
+                            <!-- Debate Header -->
+                            <div class="debate-header">
+                                <h2 class="debate-title">
+                                    <i class="fas fa-comments"></i> Intelligent Debate in Progress
+                                </h2>
+                                <div class="debate-topic" id="topicDisplay">
+                                    Please set a debate topic to begin
+                                </div>
+                            </div>
+
+                            <!-- Debate Content -->
+                            <div class="debate-content" id="debateContent">
+                                <!-- Welcome Screen -->
+                                <div class="welcome-screen">
+                                    <div class="welcome-icon">
+                                        <i class="fas fa-robot"></i>
+                                    </div>
+                                    <h3>Welcome to Desi Debate</h3>
+                                    <p>This is a multi-agent debate system where three AI agents discuss your topic from different perspectives</p>
+                                    <div class="feature-list">
+                                        <div class="feature-item">
+                                            <i class="fas fa-brain"></i>
+                                            <span>Deep learning-driven argument generation</span>
+                                        </div>
+                                        <div class="feature-item">
+                                            <i class="fas fa-chart-line"></i>
+                                            <span>Real-time stance and conviction tracking</span>
+                                        </div>
+                                        <div class="feature-item">
+                                            <i class="fas fa-sync"></i>
+                                            <span>Dynamic strategy adjustment and interaction</span>
+                                        </div>
+                                    </div>
+                                    <p class="mt-4">Enter a topic and click "Start Debate" to witness AI's reasoning capabilities!</p>
+                                </div>
+                            </div>
+
+                            <!-- Debate Controls -->
+                            <div class="debate-controls">
+                                <button class="control-btn" onclick="exportDebate()">
+                                    <i class="fas fa-download"></i> Export Records
+                                </button>
+                                <button class="control-btn" onclick="showStats()">
+                                    <i class="fas fa-chart-bar"></i> View Statistics
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simplified Loading Indicator -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-content">
+            <div class="loading-spinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            <p class="loading-text" id="loadingText">Processing...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="{{ url_for('static', filename='js/modern-app.js') }}"></script>
+    
+    <script>
+        // Initialize AOS animations
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+    </script>
+</body>
+</html> 
