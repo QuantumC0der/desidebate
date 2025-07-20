@@ -1,71 +1,71 @@
-# GNN (Graph Neural Network) 配置
+# GNN (Graph Neural Network) Configuration
 
-# 模型架構
+# Model Architecture
 model:
-  # 監督式學習架構
+  # Supervised learning architecture
   architecture: "PersuasionGNN"
   
-  # 維度設定
-  input_dim: 770         # BERT (768) + 論證特徵 (2)
-  hidden_dim: 256       # 隱藏層維度
-  output_dim: 128       # 嵌入向量維度
+  # Dimension settings
+  input_dim: 770         # BERT (768) + argument features (2)
+  hidden_dim: 256       # Hidden layer dimension
+  output_dim: 128       # Embedding vector dimension
   
-  # 網路層數
+  # Network layers
   num_layers: 3
   
-  # 正則化
+  # Regularization
   dropout: 0.2
   
-  # 激活函數
+  # Activation function
   activation: "relu"
   
-  # 圖卷積類型
-  conv_type: "GraphSAGE"  # 使用 GraphSAGE
+  # Graph convolution type
+  conv_type: "GraphSAGE"  # Use GraphSAGE
   
-  # 注意力機制
+  # Attention mechanism
   attention:
     enabled: true
     heads: 4
     concat: false
 
-# 訓練設定
+# Training Settings
 training:
-  # 基本參數
+  # Basic parameters
   epochs: 50
   learning_rate: 0.001
   batch_size: 32
   
-  # 優化器
+  # Optimizer
   optimizer: "adam"
   weight_decay: 0.0001
   
-  # 學習率調度
+  # Learning rate scheduling
   scheduler:
     type: "step"
     step_size: 10
     gamma: 0.5
   
-  # 早停
+  # Early stopping
   early_stopping:
     patience: 10
     min_delta: 0.001
     
-  # 多任務權重
+  # Multi-task weights
   task_weights:
-    delta_prediction: 0.5    # Delta 預測權重
-    quality_regression: 0.3  # 品質分數權重
-    strategy_classification: 0.2  # 策略分類權重
+    delta_prediction: 0.5    # Delta prediction weight
+    quality_regression: 0.3  # Quality score weight
+    strategy_classification: 0.2  # Strategy classification weight
 
-# 說服力預測設定
+# Persuasion Prediction Settings
 persuasion_prediction:
-  # 策略類別
+  # Strategy categories
   strategies:
-    - aggressive    # 積極攻擊型
-    - defensive     # 防禦反駁型
-    - analytical    # 分析論證型
-    - empathetic    # 同理說服型
+    - aggressive    # Aggressive attack type
+    - defensive     # Defensive rebuttal type
+    - analytical    # Analytical argument type
+    - empathetic    # Empathetic persuasion type
   
-  # 論證特徵提取
+  # Argument feature extraction
   argument_features:
     causal_markers: ["because", "therefore", "thus", "hence", "consequently"]
     contrast_markers: ["however", "but", "although", "despite", "nevertheless"]
@@ -73,39 +73,39 @@ persuasion_prediction:
     example_markers: ["for example", "for instance", "such as", "like"]
     emphasis_markers: ["indeed", "in fact", "clearly", "obviously", "certainly"]
 
-# 社會影響力計算
+# Social Influence Calculation
 social_influence:
-  # 影響力計算方法
-  method: "model_based"  # 基於模型預測
+  # Influence calculation method
+  method: "model_based"  # Based on model prediction
   
-  # 權重分配
+  # Weight allocation
   weights:
     delta_probability: 0.7
     quality_score: 0.3
 
-# 模型保存設定
+# Model Saving Settings
 checkpointing:
   save_dir: "data/models"
   model_name: "gnn_persuasion.pt"
   save_best_only: true
   monitor_metric: "delta_accuracy"
 
-# 評估設定
+# Evaluation Settings
 evaluation:
-  # 評估指標
+  # Evaluation metrics
   metrics:
     - delta_accuracy
     - delta_f1_score
     - strategy_accuracy
     - quality_mse
   
-  # 測試集比例
+  # Test set ratio
   test_split: 0.2
   
-  # 隨機種子
+  # Random seed
   random_seed: 42
 
-# 日誌設定
+# Logging Settings
 logging:
   level: "INFO"
   log_dir: "logs/gnn"

@@ -1,6 +1,6 @@
 """
-Social Debate AI 訓練收斂圖表生成器
-適用於面試簡報
+Social Debate AI Training Convergence Chart Generator
+For Interview Presentation
 """
 
 import numpy as np
@@ -12,7 +12,7 @@ from datetime import datetime
 import warnings
 warnings.filterwarnings('ignore')
 
-# 設置 matplotlib 參數
+# Set matplotlib parameters
 plt.rcParams['font.family'] = 'DejaVu Sans'
 plt.rcParams['axes.unicode_minus'] = False
 plt.rcParams['figure.dpi'] = 100
@@ -22,7 +22,7 @@ class TrainingVisualizer:
         self.save_dir = Path("charts")
         self.save_dir.mkdir(exist_ok=True)
         
-        # 專業配色
+        # Professional color scheme
         self.colors = {
             'primary': '#2E86AB',
             'secondary': '#A23B72', 
@@ -33,10 +33,10 @@ class TrainingVisualizer:
         }
         
     def generate_gnn_data(self, epochs=50):
-        """生成 GNN 訓練數據"""
+        """Generate GNN training data"""
         np.random.seed(42)
         
-        # 初始化損失和準確率
+        # Initialize loss and accuracy
         delta_loss = [0.693]  # ln(2)
         quality_loss = [0.693]
         strategy_loss = [1.386]  # ln(4)
@@ -46,17 +46,17 @@ class TrainingVisualizer:
         strategy_acc = [0.25]
         
         for epoch in range(1, epochs):
-            # 損失衰減
+            # Loss decay
             delta_loss.append(delta_loss[-1] * 0.92 + np.random.normal(0, 0.02))
             quality_loss.append(quality_loss[-1] * 0.94 + np.random.normal(0, 0.015))
             strategy_loss.append(strategy_loss[-1] * 0.88 + np.random.normal(0, 0.03))
             
-            # 準確率提升
+            # Accuracy improvement
             delta_acc.append(min(0.95, delta_acc[-1] + 0.008 + np.random.normal(0, 0.01)))
             quality_acc.append(min(0.90, quality_acc[-1] + 0.006 + np.random.normal(0, 0.01)))
             strategy_acc.append(min(0.85, strategy_acc[-1] + 0.012 + np.random.normal(0, 0.015)))
         
-        # 確保非負
+        # Ensure non-negative values
         delta_loss = [max(0.01, x) for x in delta_loss]
         quality_loss = [max(0.01, x) for x in quality_loss]
         strategy_loss = [max(0.01, x) for x in strategy_loss]
@@ -72,7 +72,7 @@ class TrainingVisualizer:
         }
     
     def generate_rl_data(self, episodes=500):
-        """生成 RL 訓練數據"""
+        """Generate RL training data"""
         np.random.seed(123)
         
         rewards = []
@@ -86,11 +86,11 @@ class TrainingVisualizer:
         for episode in range(episodes):
             progress = episode / episodes
             
-            # 獎勵逐漸增加
+            # Gradually increase rewards
             reward = base_reward + 15 * (1 - np.exp(-progress * 3)) + np.random.normal(0, 1)
             rewards.append(reward)
             
-            # 損失逐漸減少
+            # Gradually decrease loss
             p_loss = base_policy_loss * np.exp(-progress * 2) + np.random.normal(0, 0.02)
             v_loss = base_value_loss * np.exp(-progress * 1.5) + np.random.normal(0, 0.01)
             
@@ -105,11 +105,11 @@ class TrainingVisualizer:
         }
     
     def plot_gnn_training(self, data):
-        """繪製 GNN 訓練圖"""
+        """Plot GNN training charts"""
         fig, axes = plt.subplots(2, 2, figsize=(15, 10))
         fig.suptitle('GNN Multi-Task Learning Training Progress', fontsize=16, fontweight='bold')
         
-        # 損失曲線
+        # Loss curves
         ax1 = axes[0, 0]
         ax1.plot(data['epochs'], data['delta_loss'], label='Delta Loss', 
                 color=self.colors['primary'], linewidth=2)
@@ -124,7 +124,7 @@ class TrainingVisualizer:
         ax1.grid(True, alpha=0.3)
         ax1.set_yscale('log')
         
-        # 準確率曲線
+        # Accuracy curves
         ax2 = axes[0, 1]
         ax2.plot(data['epochs'], data['delta_acc'], label='Delta Accuracy', 
                 color=self.colors['primary'], linewidth=2)
@@ -139,7 +139,7 @@ class TrainingVisualizer:
         ax2.grid(True, alpha=0.3)
         ax2.set_ylim(0, 1)
         
-        # 總損失平滑曲線
+        # Total loss smooth curve
         ax3 = axes[1, 0]
         total_loss = [d + q + s for d, q, s in zip(data['delta_loss'], data['quality_loss'], data['strategy_loss'])]
         ax3.plot(data['epochs'], total_loss, color=self.colors['success'], linewidth=3)
@@ -149,7 +149,7 @@ class TrainingVisualizer:
         ax3.set_title('Overall Training Progress')
         ax3.grid(True, alpha=0.3)
         
-        # 最終性能指標
+        # Final performance metrics
         ax4 = axes[1, 1]
         tasks = ['Delta\nPrediction', 'Quality\nAssessment', 'Strategy\nClassification']
         final_accs = [data['delta_acc'][-1], data['quality_acc'][-1], data['strategy_acc'][-1]]
@@ -171,15 +171,15 @@ class TrainingVisualizer:
         return fig
     
     def plot_rl_training(self, data):
-        """繪製 RL 訓練圖"""
+        """Plot RL training charts"""
         fig, axes = plt.subplots(2, 2, figsize=(15, 10))
         fig.suptitle('Reinforcement Learning (PPO) Training Progress', fontsize=16, fontweight='bold')
         
-        # 獎勵曲線
+        # Reward curves
         ax1 = axes[0, 0]
         ax1.plot(data['episodes'], data['rewards'], alpha=0.5, color=self.colors['primary'])
         
-        # 平滑獎勵
+        # Smoothed rewards
         window = 20
         smooth_rewards = np.convolve(data['rewards'], np.ones(window)/window, mode='valid')
         ax1.plot(range(window-1, len(data['rewards'])), smooth_rewards, 
@@ -191,7 +191,7 @@ class TrainingVisualizer:
         ax1.legend()
         ax1.grid(True, alpha=0.3)
         
-        # 損失曲線
+        # Loss curves
         ax2 = axes[0, 1]
         ax2.plot(data['episodes'], data['policy_loss'], label='Policy Loss', 
                 color=self.colors['secondary'], linewidth=2)
@@ -204,7 +204,7 @@ class TrainingVisualizer:
         ax2.grid(True, alpha=0.3)
         ax2.set_yscale('log')
         
-        # 訓練階段統計
+        # Training stage statistics
         ax3 = axes[1, 0]
         stages = ['Early\n(0-100)', 'Middle\n(100-300)', 'Late\n(300-500)']
         avg_rewards = [
@@ -225,9 +225,9 @@ class TrainingVisualizer:
         ax3.set_title('Training Stages Performance')
         ax3.grid(True, alpha=0.3, axis='y')
         
-        # 收斂分析
+        # Convergence analysis
         ax4 = axes[1, 1]
-        recent_rewards = data['rewards'][-100:]  # 最近100個episode
+        recent_rewards = data['rewards'][-100:]  # Last 100 episodes
         ax4.hist(recent_rewards, bins=20, color=self.colors['primary'], alpha=0.7, edgecolor='white')
         ax4.axvline(np.mean(recent_rewards), color=self.colors['success'], linestyle='--', 
                    linewidth=2, label=f'Mean: {np.mean(recent_rewards):.1f}')
@@ -241,11 +241,11 @@ class TrainingVisualizer:
         return fig
     
     def create_system_overview(self, gnn_data, rl_data):
-        """創建系統概覽圖"""
+        """Create system overview chart"""
         fig, axes = plt.subplots(2, 3, figsize=(18, 12))
         fig.suptitle('Social Debate AI System Training Overview', fontsize=20, fontweight='bold')
         
-        # GNN 總損失
+        # GNN total loss
         ax1 = axes[0, 0]
         total_loss = [d + q + s for d, q, s in zip(gnn_data['delta_loss'], gnn_data['quality_loss'], gnn_data['strategy_loss'])]
         ax1.plot(gnn_data['epochs'], total_loss, color=self.colors['primary'], linewidth=3)
@@ -255,7 +255,7 @@ class TrainingVisualizer:
         ax1.grid(True, alpha=0.3)
         ax1.set_yscale('log')
         
-        # RL 平滑獎勵
+        # RL smoothed rewards
         ax2 = axes[0, 1]
         window = 20
         smooth_rewards = np.convolve(rl_data['rewards'], np.ones(window)/window, mode='valid')
@@ -266,12 +266,12 @@ class TrainingVisualizer:
         ax2.set_ylabel('Reward')
         ax2.grid(True, alpha=0.3)
         
-        # 系統架構
+        # System architecture
         ax3 = axes[0, 2]
         ax3.axis('off')
         ax3.set_title('System Architecture', fontsize=14, fontweight='bold')
         
-        # 簡化的系統圖
+        # Simplified system diagram
         components = [
             {'name': 'Social\nGraph', 'pos': (0.2, 0.7), 'color': self.colors['primary']},
             {'name': 'GNN\nEncoder', 'pos': (0.2, 0.3), 'color': self.colors['secondary']},
@@ -285,7 +285,7 @@ class TrainingVisualizer:
             ax3.text(comp['pos'][0], comp['pos'][1], comp['name'], 
                     ha='center', va='center', fontweight='bold', fontsize=10, color='white')
         
-        # 添加箭頭
+        # Add arrows
         ax3.annotate('', xy=(0.8, 0.65), xytext=(0.3, 0.65),
                     arrowprops=dict(arrowstyle='->', lw=2, color='gray'))
         ax3.annotate('', xy=(0.3, 0.4), xytext=(0.3, 0.6),
@@ -296,7 +296,7 @@ class TrainingVisualizer:
         ax3.set_xlim(0, 1)
         ax3.set_ylim(0, 1)
         
-        # GNN 最終性能
+        # GNN final performance
         ax4 = axes[1, 0]
         tasks = ['Delta', 'Quality', 'Strategy']
         final_accs = [gnn_data['delta_acc'][-1], gnn_data['quality_acc'][-1], gnn_data['strategy_acc'][-1]]
@@ -313,7 +313,7 @@ class TrainingVisualizer:
         ax4.set_ylim(0, 1)
         ax4.grid(True, alpha=0.3, axis='y')
         
-        # RL 最終性能
+        # RL final performance
         ax5 = axes[1, 1]
         final_reward = np.mean(rl_data['rewards'][-50:])
         final_policy_loss = np.mean(rl_data['policy_loss'][-50:])
@@ -332,10 +332,10 @@ class TrainingVisualizer:
         ax5.set_ylabel('Value')
         ax5.grid(True, alpha=0.3, axis='y')
         
-        # 訓練時間對比
+        # Training time comparison
         ax6 = axes[1, 2]
         training_types = ['GNN\n(50 epochs)', 'RL\n(500 episodes)']
-        training_times = [50, 500]  # 相對訓練時間
+        training_times = [50, 500]  # Relative training time
         
         bars = ax6.bar(training_types, training_times, 
                       color=[self.colors['primary'], self.colors['secondary']], alpha=0.8)
@@ -353,19 +353,19 @@ class TrainingVisualizer:
         return fig
     
     def generate_all_charts(self):
-        """生成所有圖表"""
-        print("正在生成訓練收斂圖表...")
+        """Generate all charts"""
+        print("Generating training convergence charts...")
         
-        # 生成數據
+        # Generate data
         gnn_data = self.generate_gnn_data()
         rl_data = self.generate_rl_data()
         
-        # 創建圖表
+        # Create charts
         gnn_fig = self.plot_gnn_training(gnn_data)
         rl_fig = self.plot_rl_training(rl_data)
         overview_fig = self.create_system_overview(gnn_data, rl_data)
         
-        # 保存圖表
+        # Save charts
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
         gnn_path = self.save_dir / f"gnn_training_{timestamp}.png"
@@ -376,15 +376,15 @@ class TrainingVisualizer:
         rl_fig.savefig(rl_path, dpi=300, bbox_inches='tight', facecolor='white')
         overview_fig.savefig(overview_path, dpi=300, bbox_inches='tight', facecolor='white')
         
-        # 保存最新版本
+        # Save latest versions
         gnn_fig.savefig(self.save_dir / "gnn_training_latest.png", dpi=300, bbox_inches='tight', facecolor='white')
         rl_fig.savefig(self.save_dir / "rl_training_latest.png", dpi=300, bbox_inches='tight', facecolor='white')
         overview_fig.savefig(self.save_dir / "system_overview_latest.png", dpi=300, bbox_inches='tight', facecolor='white')
         
-        print(f"圖表已保存至 {self.save_dir}")
-        print(f"GNN 訓練圖: {gnn_path}")
-        print(f"RL 訓練圖: {rl_path}")
-        print(f"系統概覽圖: {overview_path}")
+        print(f"Charts saved to {self.save_dir}")
+        print(f"GNN training chart: {gnn_path}")
+        print(f"RL training chart: {rl_path}")
+        print(f"System overview chart: {overview_path}")
         
         return gnn_fig, rl_fig, overview_fig
 
@@ -392,8 +392,8 @@ if __name__ == "__main__":
     visualizer = TrainingVisualizer()
     try:
         visualizer.generate_all_charts()
-        print("所有圖表生成完成!")
+        print("All charts generated successfully!")
     except Exception as e:
-        print(f"生成圖表時發生錯誤: {e}")
+        print(f"Error generating charts: {e}")
         import traceback
         traceback.print_exc() 
